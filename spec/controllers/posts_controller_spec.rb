@@ -26,7 +26,7 @@ describe PostsController, type: :controller do
       parsed_response = JSON.parse(response.body)
 
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(parsed_response['login']).to eq("login is missing")
+      expect(parsed_response['login']).to eq(["login is missing"])
     end
 
     it "failed create post if one of post's attributes is not present" do
@@ -100,7 +100,6 @@ describe PostsController, type: :controller do
       post :get_user_ips
       parsed_response = JSON.parse(response.body)
       expect(response).to have_http_status(:ok)
-      # puts parsed_response.inspect
       expect(parsed_response.blank?).to be true
     end
 
@@ -138,6 +137,7 @@ describe PostsController, type: :controller do
         user_ips << user_ip
       end
       user_ips_length = user_ips.uniq.length
+      distinct_ips_count = Post.select('distinct user_ip').count
 
       post :get_user_ips
       parsed_response = JSON.parse(response.body)
@@ -146,6 +146,7 @@ describe PostsController, type: :controller do
       expect(parsed_response.blank?).not_to be true
       expect(parsed_response.map{|pr| pr['logins'].length}.include?(0)).not_to be true
       expect(parsed_response.length).to eq(user_ips_length)
+      expect(parsed_response.length).to eq(distinct_ips_count)
     end
 
     after(:each) do
