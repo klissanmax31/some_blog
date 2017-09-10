@@ -2,7 +2,6 @@ class Post < ApplicationRecord
   belongs_to :user
   has_many :rates
 
-  # оценить и обновить среднюю оценку поста
   def self.evaluate_post(rate)
     rate.save
     average_rate = Rate.where(post_id: rate.post_id).average(:value)
@@ -10,7 +9,6 @@ class Post < ApplicationRecord
     return average_rate
   end
 
-  # возвращает топ (N) постов, которые были оценены
   def self.get_top_posts(top_count)
     return Post.where.not(average_rate: nil).order(average_rate: :desc).limit(top_count)
   end
