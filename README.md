@@ -78,22 +78,20 @@ INSERT INTO users(group_id) VALUES (1), (1), (1), (2), (1), (3);
 SELECT group_id, COUNT(*)
 FROM (
   SELECT id,
-  id - ROW_NUMBER() OVER (PARTITION BY group_id ORDER BY id)
-  AS res,
-  group_id
+         id - ROW_NUMBER() OVER (PARTITION BY group_id ORDER BY id)
+  AS res, group_id
   FROM users) new_table
   GROUP BY group_id, res
   ORDER BY group_id;
-  -- группировка по group_id (по непрерывным группам) с подсчетом кол-ва
-  записей в группе
-  SELECT group_id, MIN(new_table.id)
-  FROM (
-    SELECT id,
-    id - ROW_NUMBER() OVER (PARTITION BY group_id ORDER BY id)
-    as res,
-    group_id
-    FROM users) new_table
-    GROUP BY group_id, res
-    ORDER BY group_id;
+-- группировка по group_id (по непрерывным группам) с подсчетом кол-ва
+записей в группе
+SELECT group_id, MIN(new_table.id)
+FROM (
+  SELECT id,
+         id - ROW_NUMBER() OVER (PARTITION BY group_id ORDER BY id)
+  AS res, group_id
+  FROM users) new_table
+  GROUP BY group_id, res
+  ORDER BY group_id;
 ```
 Примечания: данный код не сортирует записи в порядке id записей.
